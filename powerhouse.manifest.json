@@ -1,0 +1,15 @@
+{
+    "name": "diff-analyzer",
+    "description": "Analyzes your documents and offers insights into their changes.",
+    "category": "analytics",
+    "publisher": {
+        "name": "PowerhouseDAO",
+        "url": "https://powerhouse.io"
+    },
+    "documentModels": [],
+    "editors": [],
+    "apps": [],
+    "subgraphs": [],
+    "processors": [],
+    "importScripts": []
+}
