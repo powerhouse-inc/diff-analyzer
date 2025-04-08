@@ -3,26 +3,21 @@
  * Delete the file and run the code generator again to have it reset
  */
 
-import {
-  ProcessorFactory,
-  ReactorModule,
-  ProcessorRecord,
-} from "@powerhousedao/reactor-api";
-import { DiffAnalyticsProcessor } from "./diff-analytics/index.js";
+import { ProcessorRecord } from "document-drive/processors/types";
+import { DiffAnalyticsProcessor } from "./diff-analytics";
 
-export const processorFactory: ProcessorFactory = (
-  driveId: string,
-  module: ReactorModule,
-): ProcessorRecord[] => {
-  return [
-    {
-      processor: new DiffAnalyticsProcessor(module.analyticsStore),
-      filter: {
-        branch: ["main"],
-        documentId: ["*"],
-        scope: ["*"],
-        documentType: ["*"],
+export const processorFactory =
+  (module: any) =>
+  (driveId: string): ProcessorRecord[] => {
+    return [
+      {
+        processor: new DiffAnalyticsProcessor(module.analyticsStore),
+        filter: {
+          branch: ["main"],
+          documentId: ["*"],
+          scope: ["*"],
+          documentType: ["*"],
+        },
       },
-    },
-  ];
-};
+    ];
+  };

@@ -4,9 +4,9 @@
 import {
   AnalyticsPath,
   type IAnalyticsStore,
-  type IProcessor,
 } from "@powerhousedao/reactor-api";
 import { type InternalTransmitterUpdate } from "document-drive";
+import type { IProcessor } from "document-drive/processors/types";
 import type { PHDocument } from "document-model";
 import {
   diffDocumentStates
