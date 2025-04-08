@@ -6,5 +6,10 @@
   },
   "reactor": {
     "port": 4001
-  }
+  },
+  "packages": [
+    {
+      "packageName": "@sky-ph/atlas"
+    }
+  ]
 }
