@@ -1,4 +1,4 @@
-import { type PHDocument } from "document-model";
+import { type GlobalStateFromDocument, type PHDocument } from "document-model";
 
 /**
  * Represents a change in a document state
@@ -43,15 +43,15 @@ export interface DocumentStateAnalyticsData {
  * Calculates the difference between two document states
  */
 export function diffDocumentStates(
-  doc1: PHDocument,
-  doc2: PHDocument,
+  doc1: GlobalStateFromDocument<PHDocument>,
+  doc2: GlobalStateFromDocument<PHDocument>,
 ): DocumentStateDiffSummary {
   const changes: DocumentStateChange[] = [];
 
   // Compare global state
   const globalChanges = diffStateObjects(
-    doc1.state.global,
-    doc2.state.global,
+    doc1,
+    doc2,
     "state.global",
     "global",
   );
