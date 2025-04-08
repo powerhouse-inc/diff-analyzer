@@ -3,7 +3,7 @@
  * Delete the file and run the code generator again to have it reset
  */
 
-import { ProcessorRecord } from "document-drive/processors/types";
+import { type ProcessorRecord } from "document-drive/processors/types";
 import { DiffAnalyticsProcessor } from "./diff-analytics";
 
 export const processorFactory =
