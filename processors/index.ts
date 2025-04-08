@@ -1,1 +1,1 @@
-export * as DiffProcessorProcessor from "./diff-processor/index.js";
+export * as DiffAnalyticsProcessor from "./diff-analytics/index.js";
