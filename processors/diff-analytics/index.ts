@@ -3,10 +3,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   AnalyticsPath,
+  type IProcessor,
   type IAnalyticsStore,
 } from "@powerhousedao/reactor-api";
-import { type InternalTransmitterUpdate } from "document-drive";
-import type { IProcessor } from "document-drive/processors/types";
+
+import {
+  type InternalTransmitterUpdate,
+} from "document-drive/server/listener/transmitter/internal";
 import type { PHDocument } from "document-model";
 import {
   diffDocumentStates
