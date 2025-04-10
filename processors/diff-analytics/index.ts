@@ -3,9 +3,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   AnalyticsPath,
-  type IProcessor,
+  AnalyticsSeriesInput,
   type IAnalyticsStore,
 } from "@powerhousedao/reactor-api";
+import { IProcessor } from "document-drive/processors/types";
 
 import {
   type InternalTransmitterUpdate,
@@ -13,7 +14,7 @@ import {
 import type { PHDocument } from "document-model";
 import {
   diffDocumentStates
-} from "lib/document-diff";
+} from "../../lib/document-diff";
 import { DateTime } from "luxon";
 
 export class DiffAnalyticsProcessor implements IProcessor {
@@ -28,6 +29,7 @@ export class DiffAnalyticsProcessor implements IProcessor {
       return;
     }
 
+    const inputs: AnalyticsSeriesInput[] = [];
     for (const strand of strands) {
       if (strand.operations.length === 0) {
         continue;
@@ -37,6 +39,7 @@ export class DiffAnalyticsProcessor implements IProcessor {
       const source = AnalyticsPath.fromString(
         `ph/${strand.driveId}/${strand.documentId}/${strand.branch}/${strand.scope}`
       );
+
       if (firstOp.index === 0) {
         await this.clearSource(source);
       }
@@ -52,41 +55,44 @@ export class DiffAnalyticsProcessor implements IProcessor {
           continue;
         }
 
-        this.addSeriesValue(
+        inputs.push(
+          this.generateInput(
+            strand.documentId,
+            strand.branch,
+            strand.scope,
+            operation.index,
+            "additions",
+            diff.additions,
+            source,
+            operation.timestamp
+          ),
+          this.generateInput(
           strand.documentId,
           strand.branch,
           strand.scope,
-          operation.index,
-          "additions",
-          diff.additions,
-          source,
-          operation.timestamp
-        );
-        this.addSeriesValue(
-          strand.documentId,
-          strand.branch,
-          strand.scope,
-          operation.index,
-          "removals",
-          diff.removals,
-          source,
-          operation.timestamp
-        );
-        this.addSeriesValue(
-          strand.documentId,
+            operation.index,
+            "removals",
+            diff.removals,
+            source,
+            operation.timestamp
+          ),
+          this.generateInput(
+            strand.documentId,
           strand.branch,
           strand.scope,
           operation.index,
           "total",
-          diff.totalChanges,
-          source,
-          operation.timestamp
+            diff.totalChanges,
+            source,
+            operation.timestamp
+          )
         );
-        
 
         console.log(">>> ", diff);
       }
     }
+
+    await this.analyticsStore.addSeriesValues(inputs);
   }
 
   async onDisconnect() {}
@@ -99,7 +105,7 @@ export class DiffAnalyticsProcessor implements IProcessor {
     }
   }
 
-  private async addSeriesValue(
+  private generateInput(
     documentId: string,
     branch: string,
     scope: string,
@@ -117,12 +123,12 @@ export class DiffAnalyticsProcessor implements IProcessor {
       `ph/${documentId}/${branch}/${scope}/${revision}`
     );
 
-    this.analyticsStore.addSeriesValue({
+    return {
       dimensions,
       metric: "Count",
       start: DateTime.fromISO(timestamp),
       source,
       value,
-    });
+    }
   }
 }
