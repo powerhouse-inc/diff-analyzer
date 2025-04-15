@@ -5,3 +5,5 @@ import { processorFactory } from "./processors";
 export const documentModels = Object.values([]);
 export const editors = Object.values([]);
 export const processors = processorFactory;
+
+export * from "lib/document-diff";
