@@ -1,179 +1,105 @@
-# Document Model Boilerplate
+# @powerhousedao/diff-analyzer
 
-This Document Model Boilerplate provides code generation for scaffolding editors and models. 
-It ensures compatibility with host applications like Connect and the Reactors for seamless document model and editor integration.
+A powerful diff analysis tool for the Powerhouse ecosystem that provides document model comparison, visualization, and analysis capabilities.
 
-## Standard Document Model Workflow with help of the boilerplate.
-This tutorial will guide you through the process of creating a new document model using the Document Model Editor in the Connect app. 
+## 🚀 Features
 
-<details>
-<summary>Available NPM commands</summary>
+- Document model diff analysis
+- GraphQL subgraph integration
+- Custom editors for diff visualization
+- Tailwind CSS styling support
+- React-based UI components
+- TypeScript type safety
+- Vitest testing framework
 
--   `generate`: Updates the generated code according to the JSON spec and GraphQL schema of your document model, made in Connect.
--   `lint`: Checks for errors with ESLint and TypeScript checking.
--   `format`: Formats the code using Prettier.
--   `build`: Builds the library project using Vite.
--   `storybook`: Starts Storybook in development mode.
--   `build-storybook`: Builds Storybook.
--   `test`: Runs Jest for testing.
-
-</details>
-
-### 1. Defining Your Document Model GraphQL Schema
-Start by creating your own 'Powerhouse Project' (Document model + editor).
-
-Step 1: Run the following command to set up your project inside this directory:
+## 📦 Installation
 
 ```bash
-npm create document-model-lib
+pnpm add @powerhousedao/diff-analyzer
 ```
 
-Step 2: Use the Document Model Editor in the Connect app
+## 🛠️ Usage
 
-The following command gives you access to all the powerhouse CLI tools available, install it globally if you are a poweruser. 
+### Basic Usage
+
+```typescript
+import { DiffAnalyzer } from '@powerhousedao/diff-analyzer';
+
+// Initialize the analyzer
+const analyzer = new DiffAnalyzer();
+
+// Analyze differences between document models
+const diff = await analyzer.analyze(oldModel, newModel);
+```
+
+### Using Custom Editors
+
+```typescript
+import { DiffEditor } from '@powerhousedao/diff-analyzer/editors';
+
+// Use the built-in diff editor component
+<DiffEditor diff={diff} />
+```
+
+### Document Models
+
+```typescript
+import { DocumentModel } from '@powerhousedao/diff-analyzer/document-models';
+
+// Work with document models
+const model = new DocumentModel();
+```
+
+## 🏗️ Development
+
+### Available Scripts
+
+- `pnpm build` - Build the package
+- `pnpm test` - Run tests
+- `pnpm lint` - Run linting
+- `pnpm generate` - Generate code
+- `pnpm connect` - Connect to services
+- `pnpm reactor` - Run reactor
+- `pnpm service` - Manage services
+
+### Project Structure
+
+```
+diff-analyzer/
+├── document-models/  # Document model definitions
+├── editors/         # Diff visualization editors
+├── processors/      # Diff processing logic
+├── subgraphs/       # GraphQL subgraph definitions
+├── lib/            # Core library code
+└── test/           # Test files
+```
+
+## 🧪 Testing
+
+Run the test suite:
 
 ```bash
-npm install ph-cmd
+pnpm test
 ```
-Now you are able to launch Connect in Studio Mode (Locally):
+
+For watch mode:
 
 ```bash
-npm run connect
+pnpm test:watch
 ```
 
-Open the 'Document Model' creator at the bottom of connect to define your document mode with it's GraphQL Schema Definition.
-This schema will define the structure and fields for your document model using GraphQL. 
-Follow one of our tutorials on Academy to get familiar with the process. 
+## 📚 Documentation
 
-### 2. Defining Document Model Operations
-Using the Document Model Operations Editor, define the operations for your document model and their GraphQL counterparts. 
-These operations will handle state changes within your document model.
+For more detailed documentation, visit our [documentation site](https://docs.powerhouse.com/diff-analyzer).
 
-**Best Practices:**
+## 🤝 Contributing
 
-- Clearly define CRUD operations (Create, Read, Update, Delete).
-- Use GraphQL input types to specify the parameters for each operation.
-- Ensure that operations align with user intent to maintain a clean and understandable API.
+1. Fork the repository
+2. Create your feature branch
+3. Make your changes
+4. Run tests and linting
+5. Submit a pull request
 
-### 3. Generating Scaffolding Code
-Export your document model as a .zip file from Connect.
-Import the .zip file into your project directory created in Step 1.
-Run the following command to generate the scaffolding code:
+## 📄 License
 
-```bash
-npm run generate YourModelName.phdm.zip
-```
-
-This will create a new directory under /document-models containing:
-
-JSON file with the document model specification.
-GraphQL file with state and operation schemas.
-A gen/ folder with autogenerated code.
-A src/ folder for your custom code implementation.
-
-### 4. Implementing Reducer Code and Unit Tests
-Navigate to the reducer directory:
-
-```bash
-cd document-models/"YourModelName"/src/reducers
-```
-
-Implement the reducer functions for each document model operation. These functions will handle state transitions.
-
-Add utility functions in:
-
-```bash
-document-models/"YourModelName"/src/utils.ts
-```
-
-Write unit tests to ensure the correctness of your reducers:
-
-Test files should be located in:
-
-```bash
-document-models/"YourModelName"/src/reducers/tests
-```
-
-Run the tests:
-
-```bash
-npm test
-```
-
-Test the editor functionality:
-
-```bash
-npm run connect
-```
-
-### 5. Implementing Document Editors
-Generate the editor template for your document model:
-
-```bash
-npm run generate -- --editor YourModelName --document-types powerhouse/YourModelName
-```
-
-The --editor flag specifies the name of your document model.
-The --document-types flag links the editor to your document model type.
-After generation:
-
-Open the editor template:
-
-```bash
-editors/YourModelName/editor.tsx
-```
-
-Customize the editor interface to suit your document model.
-
-### 6. Testing the Document Editor
-Run the Connect app to test your document editor:
-
-```bash
-npm run connect
-```
-
-Verify that the editor functions as expected.
-Perform end-to-end testing to ensure smooth integration between the document model and its editor.
-
-### 7. Adding a Manifest File
-Create a manifest file to describe your document model and editor. This enables proper integration with the host application.
-
-**Example manifest.json:**
-
-```json
-{
-  "name": "your-model-name",
-  "description": "A brief description of your document model.",
-  "category": "your-category", // e.g., "Finance", "People Ops", "Legal"
-  "publisher": {
-    "name": "your-publisher-name",
-    "url": "your-publisher-url"
-  },
-  "documentModels": [
-    {
-      "id": "your-model-id",
-      "name": "your-model-name"
-    }
-  ],
-  "editors": [
-    {
-      "id": "your-editor-id",
-      "name": "your-editor-name",
-      "documentTypes": ["your-model-id"]
-    }
-  ]
-}
-```
-
-### Steps to finalize:
-
-Place the manifest file at your project root.
-Update your index.js to export your modules and include the new document model and editor.
-
-### Final Thoughts
-You've now successfully created a Document Model and its corresponding Editor using the Connect app!
-
-Next Steps:
-- Expand functionality: Add more operations or complex logic to your document model.
-- Improve UX: Enhance the document editor for a smoother user experience.
-- Integrate with other systems: Use APIs or GraphQL to connect your document model with external services.
+This project is licensed under AGPL-3.0-only - see the [LICENSE](LICENSE) file for details.
