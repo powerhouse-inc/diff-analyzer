@@ -46,6 +46,7 @@ export class DiffAnalyticsProcessor implements IProcessor {
         );
 
         for(const change of diff.changes) {
+          console.log(">>> change", change);
           inputs.push(
             this.generateInput(
               strand.documentId,
