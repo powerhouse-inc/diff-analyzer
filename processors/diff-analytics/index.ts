@@ -1,6 +1,3 @@
- 
- 
- 
 import {
   AnalyticsPath,
   type AnalyticsSeriesInput,
@@ -8,15 +5,12 @@ import {
 } from "@powerhousedao/reactor-api";
 import { type IProcessor } from "document-drive/processors/types";
 
-import {
-  type InternalTransmitterUpdate,
-} from "document-drive/server/listener/transmitter/internal";
+import { type InternalTransmitterUpdate } from "document-drive/server/listener/transmitter/internal";
 import type { PHDocument } from "document-model";
-import {
-  diffDocumentStates,
-  generateStateAnalyticsData
-} from "../../lib/document-diff";
 import { DateTime } from "luxon";
+import {
+  diffDocumentStates
+} from "../../lib/document-diff";
 
 export class DiffAnalyticsProcessor implements IProcessor {
   constructor(private readonly analyticsStore: IAnalyticsStore) {
@@ -51,44 +45,21 @@ export class DiffAnalyticsProcessor implements IProcessor {
           operation.state
         );
 
-        if (!diff) {
-          continue;
+        for(const change of diff.changes) {
+          inputs.push(
+            this.generateInput(
+              strand.documentId,
+              strand.branch,
+              strand.scope,
+              operation.index,
+              change.type,
+              1,
+              source,
+              operation.timestamp,
+              change.path
+            )
+          );
         }
-
-        console.log(`>>> Diff for ${operation.type}: `, generateStateAnalyticsData(diff));
-
-        inputs.push(
-          this.generateInput(
-            strand.documentId,
-            strand.branch,
-            strand.scope,
-            operation.index,
-            "additions",
-            diff.additions,
-            source,
-            operation.timestamp
-          ),
-          this.generateInput(
-          strand.documentId,
-          strand.branch,
-          strand.scope,
-            operation.index,
-            "removals",
-            diff.removals,
-            source,
-            operation.timestamp
-          ),
-          this.generateInput(
-            strand.documentId,
-          strand.branch,
-          strand.scope,
-          operation.index,
-          "total",
-            diff.totalChanges,
-            source,
-            operation.timestamp
-          )
-        );
       }
     }
 
@@ -113,14 +84,20 @@ export class DiffAnalyticsProcessor implements IProcessor {
     type: string,
     value: number,
     source: AnalyticsPath,
-    timestamp: string
+    timestamp: string,
+    path: string
   ) {
     const dimensions: Record<string, AnalyticsPath> = {};
 
-    dimensions[type] = AnalyticsPath.fromString(`ph/changes/${type}`);
 
-    dimensions.revision = AnalyticsPath.fromString(
-      `ph/${documentId}/${branch}/${scope}/${revision}`
+    const changePath = path.split("[")[0].replaceAll(".", "/");
+
+    dimensions.changes = AnalyticsPath.fromString(`changes/${type}`);
+    dimensions.document = AnalyticsPath.fromString(
+      `document/${documentId}/${branch}/${scope}/${revision}`
+    );
+    dimensions.path = AnalyticsPath.fromString(
+      `path/${changePath}`
     );
 
     return {
@@ -129,6 +106,6 @@ export class DiffAnalyticsProcessor implements IProcessor {
       start: DateTime.fromISO(timestamp),
       source,
       value,
-    }
+    };
   }
 }

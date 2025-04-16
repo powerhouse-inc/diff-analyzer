@@ -9,8 +9,6 @@ import { DiffAnalyticsProcessor } from "./diff-analytics";
 export const processorFactory =
   (module: any) =>
   (driveId: string): ProcessorRecord[] => {
-    console.log(">>>>>>processorFactory", driveId);
-
     return [
       {
         processor: new DiffAnalyticsProcessor(module.analyticsStore),

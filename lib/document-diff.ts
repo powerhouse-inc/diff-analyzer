@@ -57,8 +57,6 @@ export function diffDocumentStates(
   );
   changes.push(...globalChanges);
 
-  console.log(">>> changes", changes);
-
   // Count changes by type
   const additions = changes.filter((c) => c.type === "add").length;
   const removals = changes.filter((c) => c.type === "remove").length;
