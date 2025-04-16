@@ -83,7 +83,7 @@ describe("Document State Diffing", () => {
       const doc1 = createMockDocument();
       const doc2 = createMockDocument();
 
-      const diff = diffDocumentStates(doc1, doc2);
+      const diff = diffDocumentStates(doc1.state.global, doc2.state.global);
 
       expect(diff.totalChanges).toBe(0);
       expect(diff.additions).toBe(0);
@@ -107,7 +107,7 @@ describe("Document State Diffing", () => {
         },
       });
 
-      const diff = diffDocumentStates(doc1, doc2);
+      const diff = diffDocumentStates(doc1.state.global, doc2.state.global);
 
       // For title change: "Test Title" -> "Updated Title"
       // - Remove: T,e,s,t, ,T,i,t,l,e (10 chars)
@@ -160,18 +160,7 @@ describe("Document State Diffing", () => {
         },
       });
 
-      const diff = diffDocumentStates(doc1, doc2);
-
-      // Debug: Print out the actual changes
-      console.log(
-        "Actual changes:",
-        diff.changes.map((c) => ({
-          type: c.type,
-          path: c.path,
-          oldValue: c.oldValue,
-          newValue: c.newValue,
-        })),
-      );
+      const diff = diffDocumentStates(doc1.state.global, doc2.state.global);
 
       // Calculate expected changes:
       // 1. title: "Test Title" -> "Updated Title" = 23 changes (10 removes + 13 adds)
@@ -241,18 +230,7 @@ describe("Document State Diffing", () => {
         },
       });
 
-      const diff = diffDocumentStates(doc1, doc2);
-
-      // Debug: Print out the actual changes
-      console.log(
-        "Character changes:",
-        diff.changes.map((c) => ({
-          type: c.type,
-          path: c.path,
-          oldValue: c.oldValue,
-          newValue: c.newValue,
-        })),
-      );
+      const diff = diffDocumentStates(doc1.state.global, doc2.state.global);
 
       // We expect 10 changes: 5 removes (f,r,a,n,k) + 5 adds (m,a,r,t,i)
       expect(diff.totalChanges).toBe(10);

@@ -1,19 +1,20 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+ 
+ 
+ 
 import {
   AnalyticsPath,
-  AnalyticsSeriesInput,
+  type AnalyticsSeriesInput,
   type IAnalyticsStore,
 } from "@powerhousedao/reactor-api";
-import { IProcessor } from "document-drive/processors/types";
+import { type IProcessor } from "document-drive/processors/types";
 
 import {
   type InternalTransmitterUpdate,
 } from "document-drive/server/listener/transmitter/internal";
 import type { PHDocument } from "document-model";
 import {
-  diffDocumentStates
+  diffDocumentStates,
+  generateStateAnalyticsData
 } from "../../lib/document-diff";
 import { DateTime } from "luxon";
 
@@ -45,15 +46,16 @@ export class DiffAnalyticsProcessor implements IProcessor {
       }
 
       for (const operation of strand.operations) {
-        console.log(">>> ", operation.type);
         const diff = diffDocumentStates(
           operation.previousState,
-          operation.resultingState
+          operation.state
         );
 
         if (!diff) {
           continue;
         }
+
+        console.log(`>>> Diff for ${operation.type}: `, generateStateAnalyticsData(diff));
 
         inputs.push(
           this.generateInput(
@@ -87,8 +89,6 @@ export class DiffAnalyticsProcessor implements IProcessor {
             operation.timestamp
           )
         );
-
-        console.log(">>> ", diff);
       }
     }
 
