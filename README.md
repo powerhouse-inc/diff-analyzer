@@ -23,13 +23,19 @@ pnpm add @powerhousedao/diff-analyzer
 ### Basic Usage
 
 ```typescript
-import { DiffAnalyzer } from '@powerhousedao/diff-analyzer';
+import { diffDocumentStates, generateStateAnalyticsData } from '@powerhousedao/diff-analyzer/lib/document-diff';
 
-// Initialize the analyzer
-const analyzer = new DiffAnalyzer();
+// Compare two document states
+const diff = diffDocumentStates(
+  previousState,
+  currentState
+);
 
-// Analyze differences between document models
-const diff = await analyzer.analyze(oldModel, newModel);
+// Generate analytics data from the diff
+const analyticsData = generateStateAnalyticsData(diff);
+
+// Use the diff data as needed
+console.log(`>>> Diff: `, analyticsData);
 ```
 
 ### Using Custom Editors
