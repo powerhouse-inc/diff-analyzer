@@ -25,6 +25,10 @@
       "types": "./dist/subgraphs/index.d.ts",
       "default": "./dist/subgraphs/index.js"
     },
+    "./processors": {
+      "types": "./dist/processors/index.d.ts",
+      "default": "./dist/processors/index.js"
+    },
     "./manifest": {
       "types": "./dist/manifest.d.ts",
       "default": "./dist/manifest.js"
@@ -49,12 +53,12 @@
     "service-unstartup": "bash ./node_modules/@powerhousedao/ph-cli/dist/scripts/service-unstartup.sh"
   },
   "dependencies": {
-    "@powerhousedao/builder-tools": "0.9.27-dev.3",
-    "@powerhousedao/common": "1.10.31-dev.0",
-    "@powerhousedao/design-system": "1.39.17-dev.0",
+    "@powerhousedao/builder-tools": "0.9.29-staging.1",
+    "@powerhousedao/common": "1.10.33-staging.1",
+    "@powerhousedao/design-system": "1.39.17-staging.3",
     "@sky-ph/atlas": "1.2.26-dev.0",
     "@types/luxon": "^3.6.2",
-    "document-model": "dev",
+    "document-model": "2.28.1-staging.3",
     "graphql": "^16.10.0",
     "graphql-tag": "^2.12.6",
     "luxon": "^3.6.1",
@@ -62,18 +66,18 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
-    "@powerhousedao/analytics-engine-core": "^0.3.2",
-    "@powerhousedao/codegen": "0.49.2-dev.11",
-    "@powerhousedao/ph-cli": "0.40.46-dev.0",
-    "@powerhousedao/reactor-api": "1.29.18-dev.10",
-    "@powerhousedao/reactor-browser": "1.22.25-dev.0",
-    "@powerhousedao/reactor-local": "1.27.34-dev.0",
-    "@powerhousedao/scalars": "1.33.1-dev.4",
+    "@powerhousedao/analytics-engine-core": "^0.4.0",
+    "@powerhousedao/codegen": "0.49.2-staging.3",
+    "@powerhousedao/ph-cli": "0.40.48-staging.1",
+    "@powerhousedao/reactor-api": "1.29.18-staging.7",
+    "@powerhousedao/reactor-browser": "1.22.25-staging.3",
+    "@powerhousedao/reactor-local": "1.27.35-staging.1",
+    "@powerhousedao/scalars": "1.33.1-staging.3",
     "@tailwindcss/cli": "^4.0.15",
     "@types/node": "^22.13.11",
     "@types/react": "^18.3.19",
     "@vitejs/plugin-react": "^4.3.4",
-    "document-drive": "1.29.8-dev.3",
+    "document-drive": "1.29.9-staging.1",
     "eslint": "^9.22.0",
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-react-hooks": "^5.2.0",

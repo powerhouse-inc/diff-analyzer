@@ -1,8 +1,7 @@
 import {
   AnalyticsPath,
   type AnalyticsSeriesInput,
-  type IAnalyticsStore,
-} from "@powerhousedao/reactor-api";
+} from "@powerhousedao/analytics-engine-core";
 import { type IProcessor } from "document-drive/processors/types";
 
 import { type InternalTransmitterUpdate } from "document-drive/server/listener/transmitter/internal";
@@ -11,6 +10,7 @@ import { DateTime } from "luxon";
 import {
   diffDocumentStates
 } from "../../lib/document-diff";
+import { type IAnalyticsStore } from "@powerhousedao/reactor-api";
 
 export class DiffAnalyticsProcessor implements IProcessor {
   constructor(private readonly analyticsStore: IAnalyticsStore) {

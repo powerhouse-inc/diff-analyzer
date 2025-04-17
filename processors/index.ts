@@ -5,9 +5,10 @@
 
 import { type ProcessorRecord } from "document-drive/processors/types";
 import { DiffAnalyticsProcessor } from "./diff-analytics";
+import { type IAnalyticsStore } from "@powerhousedao/reactor-api";
 
 export const processorFactory =
-  (module: any) =>
+  (module: { analyticsStore: IAnalyticsStore }) =>
   (driveId: string): ProcessorRecord[] => {
     return [
       {
