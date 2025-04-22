@@ -7,18 +7,20 @@ import { type IProcessor } from "document-drive/processors/types";
 import { type InternalTransmitterUpdate } from "document-drive/server/listener/transmitter/internal";
 import type { PHDocument } from "document-model";
 import { DateTime } from "luxon";
-import {
-  diffDocumentStates
-} from "../../lib/document-diff";
+import { diffDocumentStates } from "../../lib/document-diff.js";
 import { type IAnalyticsStore } from "@powerhousedao/reactor-api";
+import { childLogger } from "document-drive";
 
 export class DiffAnalyticsProcessor implements IProcessor {
-  constructor(private readonly analyticsStore: IAnalyticsStore) {
+  constructor(
+    private readonly analyticsStore: IAnalyticsStore,
+    private readonly logger = childLogger(["processor", "diff-analytics"]),
+  ) {
     //
   }
 
   async onStrands<TDocument extends PHDocument>(
-    strands: InternalTransmitterUpdate<TDocument>[]
+    strands: InternalTransmitterUpdate<TDocument>[],
   ): Promise<void> {
     if (strands.length === 0) {
       return;
@@ -32,7 +34,7 @@ export class DiffAnalyticsProcessor implements IProcessor {
 
       const firstOp = strand.operations[0];
       const source = AnalyticsPath.fromString(
-        `ph/${strand.driveId}/${strand.documentId}/${strand.branch}/${strand.scope}`
+        `ph/${strand.driveId}/${strand.documentId}/${strand.branch}/${strand.scope}`,
       );
 
       if (firstOp.index === 0) {
@@ -42,11 +44,10 @@ export class DiffAnalyticsProcessor implements IProcessor {
       for (const operation of strand.operations) {
         const diff = diffDocumentStates(
           operation.previousState,
-          operation.state
+          operation.state,
         );
 
-        for(const change of diff.changes) {
-          console.log(">>> change", change);
+        for (const change of diff.changes) {
           inputs.push(
             this.generateInput(
               strand.documentId,
@@ -57,14 +58,16 @@ export class DiffAnalyticsProcessor implements IProcessor {
               1,
               source,
               operation.timestamp,
-              change.path
-            )
+              change.path,
+            ),
           );
         }
       }
     }
 
-    await this.analyticsStore.addSeriesValues(inputs);
+    if (inputs.length) {
+      await this.analyticsStore.addSeriesValues(inputs);
+    }
   }
 
   async onDisconnect() {}
@@ -73,7 +76,7 @@ export class DiffAnalyticsProcessor implements IProcessor {
     try {
       await this.analyticsStore.clearSeriesBySource(source, true);
     } catch (e) {
-      console.error(e);
+      this.logger.error("Failed to clear source", e);
     }
   }
 
@@ -86,20 +89,17 @@ export class DiffAnalyticsProcessor implements IProcessor {
     value: number,
     source: AnalyticsPath,
     timestamp: string,
-    path: string
+    path: string,
   ) {
     const dimensions: Record<string, AnalyticsPath> = {};
-
 
     const changePath = path.split("[")[0].replaceAll(".", "/");
 
     dimensions.changes = AnalyticsPath.fromString(`changes/${type}`);
     dimensions.document = AnalyticsPath.fromString(
-      `document/${documentId}/${branch}/${scope}/${revision}`
+      `document/${documentId}/${branch}/${scope}/${revision}`,
     );
-    dimensions.path = AnalyticsPath.fromString(
-      `path/${changePath}`
-    );
+    dimensions.path = AnalyticsPath.fromString(`path/${changePath}`);
 
     return {
       dimensions,

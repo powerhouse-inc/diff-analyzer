@@ -4,7 +4,7 @@
  */
 
 import { type ProcessorRecord } from "document-drive/processors/types";
-import { DiffAnalyticsProcessor } from "./diff-analytics";
+import { DiffAnalyticsProcessor } from "./diff-analytics/index.js";
 import { type IAnalyticsStore } from "@powerhousedao/reactor-api";
 
 export const processorFactory =

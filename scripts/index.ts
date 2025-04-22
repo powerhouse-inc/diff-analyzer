@@ -1,9 +1,9 @@
 import { detectSync } from 'package-manager-detector/detect';
 import { resolveCommand } from 'package-manager-detector/commands';
-import { AgentName } from 'package-manager-detector';
+import { type AgentName } from 'package-manager-detector';
 import { execSync } from 'child_process';
 
-import pkg from '../package.json';
+import pkg from '../package.json' with { type: 'json' };
 
 const packageJson = pkg as { dependencies?: Record<string, string>, devDependencies?: Record<string, string> };
 
