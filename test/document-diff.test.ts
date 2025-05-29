@@ -4,7 +4,7 @@ import {
   generateStateAnalyticsData,
   type DocumentStateChange,
   type DocumentStateDiffSummary,
-} from "../lib/document-diff.js";
+} from "../lib/index.js";
 import { type PHDocument } from "document-model";
 
 /**

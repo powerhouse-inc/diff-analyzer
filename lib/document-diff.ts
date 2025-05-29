@@ -1,43 +1,6 @@
 import { type GlobalStateFromDocument, type PHDocument } from "document-model";
+import { type DocumentStateChange, type DocumentStateDiffSummary, type DocumentStateAnalyticsData } from "./types.js";
 
-/**
- * Represents a change in a document state
- */
-export interface DocumentStateChange {
-  type: "add" | "remove";
-  path: string;
-  oldValue?: unknown;
-  newValue?: unknown;
-  scope: "global" | "local";
-}
-
-/**
- * Summary of changes in a document state
- */
-export interface DocumentStateDiffSummary {
-  totalChanges: number;
-  additions: number;
-  removals: number;
-  changesByScope: {
-    global: DocumentStateChange[];
-  };
-  changes: DocumentStateChange[];
-}
-
-/**
- * Analytics data generated from a state diff summary
- */
-export interface DocumentStateAnalyticsData {
-  totalChanges: number;
-  changesByType: {
-    add: number;
-    remove: number;
-  };
-  changesByScope: {
-    global: number;
-  };
-  changePaths: string[];
-}
 
 /**
  * Calculates the difference between two document states

@@ -10,11 +10,13 @@ import { DateTime } from "luxon";
 import { diffDocumentStates } from "../../lib/document-diff.js";
 import { type IAnalyticsStore } from "@powerhousedao/reactor-api";
 import { childLogger } from "document-drive";
+import { type DiffWorkerManager } from "../../lib/diff-worker-manager.js";
 
 export class DiffAnalyticsProcessor implements IProcessor {
   constructor(
     private readonly analyticsStore: IAnalyticsStore,
     private readonly logger = childLogger(["processor", "diff-analytics"]),
+    private readonly diffWorkerManager: DiffWorkerManager
   ) {
     //
   }
@@ -42,7 +44,7 @@ export class DiffAnalyticsProcessor implements IProcessor {
       }
 
       for (const operation of strand.operations) {
-        const diff = diffDocumentStates(
+        const diff = await this.diffWorkerManager.calculateDiff(
           operation.previousState,
           operation.state,
         );
