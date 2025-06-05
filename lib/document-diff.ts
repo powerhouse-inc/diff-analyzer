@@ -49,12 +49,7 @@ export function diffDocumentStates(
   const changes: DocumentStateChange[] = [];
 
   // Compare global state
-  const globalChanges = diffStateObjects(
-    doc1,
-    doc2,
-    "state.global",
-    "global",
-  );
+  const globalChanges = diffStateObjects(doc1, doc2, "state.global", "global");
   changes.push(...globalChanges);
 
   // Count changes by type
@@ -86,6 +81,57 @@ function diffStateObjects(
 ): DocumentStateChange[] {
   const changes: DocumentStateChange[] = [];
 
+  // Handle arrays
+  if (Array.isArray(obj1) && Array.isArray(obj2)) {
+    let index = 0;
+    for (; index < obj1.length; index++) {
+      const element = obj1[index] as unknown;
+      if (!obj2[index]) {
+        changes.push(
+          ...diffStateObjects(
+            element,
+
+            typeof element === "string" ? "" : null,
+            `${path}[${index}]`,
+            scope,
+          ),
+        );
+      } else {
+        const elementChanges = diffStateObjects(
+          element,
+          obj2[index],
+          `${path}[${index}]`,
+          scope,
+        );
+        changes.push(...elementChanges);
+      }
+    }
+
+    for (; index < obj2.length; index++) {
+      const element = obj2[index] as unknown;
+      if (!obj1[index]) {
+        changes.push(
+          ...diffStateObjects(
+            typeof element === "string" ? "" : null,
+            element,
+            `${path}[${index}]`,
+            scope,
+          ),
+        );
+      } else {
+        const elementChanges = diffStateObjects(
+          obj1[index],
+          element,
+          `${path}[${index}]`,
+          scope,
+        );
+        changes.push(...elementChanges);
+      }
+    }
+
+    return changes;
+  }
+
   // Handle primitive values
   if (
     typeof obj1 !== "object" ||
@@ -112,39 +158,6 @@ function diffStateObjects(
           scope,
         });
       }
-    }
-    return changes;
-  }
-
-  // Handle arrays
-  if (Array.isArray(obj1) && Array.isArray(obj2)) {
-    // Compare array lengths
-    if (obj1.length !== obj2.length) {
-      // For arrays with different lengths, treat as a remove + add
-      changes.push({
-        type: "remove",
-        path,
-        oldValue: obj1,
-        scope,
-      });
-      changes.push({
-        type: "add",
-        path,
-        newValue: obj2,
-        scope,
-      });
-      return changes;
-    }
-
-    // Compare array elements
-    for (let i = 0; i < obj1.length; i++) {
-      const elementChanges = diffStateObjects(
-        obj1[i],
-        obj2[i],
-        `${path}[${i}]`,
-        scope,
-      );
-      changes.push(...elementChanges);
     }
     return changes;
   }

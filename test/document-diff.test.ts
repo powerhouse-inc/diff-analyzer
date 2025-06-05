@@ -5,7 +5,7 @@ import {
   type DocumentStateChange,
   type DocumentStateDiffSummary,
 } from "../lib/document-diff.js";
-import { type PHDocument } from "document-model";
+import { generateId, type PHDocument } from "document-model";
 
 /**
  * Test state types for document state diffing
@@ -26,6 +26,8 @@ type TestState = {
 };
 
 describe("Document State Diffing", () => {
+  const id = generateId();
+
   /**
    * Creates a mock document for testing
    */
@@ -33,6 +35,8 @@ describe("Document State Diffing", () => {
     overrides: Partial<PHDocument> = {},
   ): PHDocument => {
     const baseDoc: PHDocument = {
+      id,
+      slug: "test-document",
       name: "Test Document",
       revision: { global: 0, local: 0 },
       documentType: "test",
@@ -55,6 +59,8 @@ describe("Document State Diffing", () => {
         local: [],
       },
       initialState: {
+        id,
+        slug: "test-document",
         name: "Test Document",
         revision: { global: 0, local: 0 },
         documentType: "test",
@@ -253,6 +259,49 @@ describe("Document State Diffing", () => {
       );
       expect(firstCharChanges.find((c) => c.type === "add")?.newValue).toBe(
         "m",
+      );
+    });
+
+    it("should detect changes in state arrays", () => {
+      const doc1 = {
+        tags: [1, "test"],
+      };
+
+      const doc2 = {
+        tags: [2, "document", "diff"],
+      };
+
+      const diff = diffDocumentStates(doc1, doc2);
+
+      // We expect 18 changes: 5 remove (1, test), 13 adds (2, document, diff)
+      expect(diff.totalChanges).toBe(18);
+      expect(diff.additions).toBe(13);
+      expect(diff.removals).toBe(5);
+
+      // Check specific changes
+      const tagChanges = diff.changes.filter((c) =>
+        c.path.startsWith("state.global.tags"),
+      );
+      expect(tagChanges.length).toBe(18);
+
+      // Verify number change (1 -> 2)
+      const tagChangesNumber = tagChanges.filter(
+        (c) => c.path === "state.global.tags[0]",
+      );
+      expect(tagChangesNumber.length).toBe(2);
+      expect(tagChangesNumber.find((c) => c.type === "add")?.newValue).toBe(2);
+      expect(tagChangesNumber.find((c) => c.type === "remove")?.oldValue).toBe(
+        1,
+      );
+
+      // Verify first character change (t -> d)
+      const tagChangesFirst = tagChanges.filter(
+        (c) => c.path === "state.global.tags[1][0]",
+      );
+      expect(tagChangesFirst.length).toBe(2);
+      expect(tagChangesFirst.find((c) => c.type === "add")?.newValue).toBe("d");
+      expect(tagChangesFirst.find((c) => c.type === "remove")?.oldValue).toBe(
+        "t",
       );
     });
   });
