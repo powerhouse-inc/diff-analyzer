@@ -34,7 +34,7 @@ export class DiffAnalyticsProcessor implements IProcessor {
 
       const firstOp = strand.operations[0];
       const source = AnalyticsPath.fromString(
-        `ph/${strand.driveId}/${strand.documentId}/${strand.branch}/${strand.scope}`,
+        `ph/${strand.documentId}/${strand.branch}/${strand.scope}`,
       );
 
       if (firstOp.index === 0) {
