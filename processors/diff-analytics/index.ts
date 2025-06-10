@@ -71,14 +71,12 @@ export class DiffAnalyticsProcessor implements IProcessor {
           while (buffer.length >= CHUNK_SIZE) {
             const batch = buffer.splice(0, CHUNK_SIZE);
             await this.analyticsStore.addSeriesValues(batch);
-            console.log(`Added ${CHUNK_SIZE} inputs for ${strand.documentId}`);
           }
         }
 
         // Flush any remaining inputs
         if (buffer.length > 0) {
           await this.analyticsStore.addSeriesValues(buffer);
-          console.log(`Added ${buffer.length} inputs for ${strand.documentId}`);
         }
       }
     }
