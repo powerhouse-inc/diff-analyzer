@@ -10,6 +10,7 @@ import { DateTime } from "luxon";
 import { diffDocumentStates } from "../../lib/document-diff.js";
 import { type IAnalyticsStore } from "@powerhousedao/reactor-api";
 import { childLogger } from "document-drive";
+import { runAsapAsync } from "document-drive/utils/misc";
 
 export class DiffAnalyticsProcessor implements IProcessor {
   constructor(
@@ -26,7 +27,6 @@ export class DiffAnalyticsProcessor implements IProcessor {
       return;
     }
 
-    const inputs: AnalyticsSeriesInput[] = [];
     for (const strand of strands) {
       if (strand.operations.length === 0) {
         continue;
@@ -41,14 +41,18 @@ export class DiffAnalyticsProcessor implements IProcessor {
         await this.clearSource(source);
       }
 
-      for (const operation of strand.operations) {
-        const diff = diffDocumentStates(
-          operation.previousState,
-          operation.state,
-        );
+      const CHUNK_SIZE = 50;
+      for (let i = 0; i < strand.operations.length; i += CHUNK_SIZE) {
+        const chunk = strand.operations.slice(i, i + CHUNK_SIZE);
 
-        for (const change of diff.changes) {
-          inputs.push(
+        const buffer: AnalyticsSeriesInput[] = [];
+
+        for (const operation of chunk) {
+          const diff = await runAsapAsync(async () =>
+            diffDocumentStates(operation.previousState, operation.state),
+          );
+
+          const inputs: AnalyticsSeriesInput[] = diff.changes.map((change) =>
             this.generateInput(
               strand.documentId,
               strand.branch,
@@ -61,12 +65,22 @@ export class DiffAnalyticsProcessor implements IProcessor {
               change.path,
             ),
           );
+
+          buffer.push(...inputs);
+
+          while (buffer.length >= CHUNK_SIZE) {
+            const batch = buffer.splice(0, CHUNK_SIZE);
+            await this.analyticsStore.addSeriesValues(batch);
+            console.log(`Added ${CHUNK_SIZE} inputs for ${strand.documentId}`);
+          }
+        }
+
+        // Flush any remaining inputs
+        if (buffer.length > 0) {
+          await this.analyticsStore.addSeriesValues(buffer);
+          console.log(`Added ${buffer.length} inputs for ${strand.documentId}`);
         }
       }
-    }
-
-    if (inputs.length) {
-      await this.analyticsStore.addSeriesValues(inputs);
     }
   }
 
