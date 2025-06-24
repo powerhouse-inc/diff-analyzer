@@ -54,6 +54,7 @@ export class DiffAnalyticsProcessor implements IProcessor {
 
           const inputs: AnalyticsSeriesInput[] = diff.changes.map((change) =>
             this.generateInput(
+              strand.driveId,
               strand.documentId,
               strand.branch,
               strand.scope,
@@ -93,6 +94,7 @@ export class DiffAnalyticsProcessor implements IProcessor {
   }
 
   private generateInput(
+    driveId: string,
     documentId: string,
     branch: string,
     scope: string,
@@ -112,6 +114,7 @@ export class DiffAnalyticsProcessor implements IProcessor {
       `document/${documentId}/${branch}/${scope}/${revision}`,
     );
     dimensions.path = AnalyticsPath.fromString(`path/${changePath}`);
+    dimensions.drive = AnalyticsPath.fromString(`drive/${driveId}/${documentId}`);
 
     return {
       dimensions,
