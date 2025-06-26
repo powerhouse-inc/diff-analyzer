@@ -34,7 +34,7 @@ export class DiffAnalyticsProcessor implements IProcessor {
 
       const firstOp = strand.operations[0];
       const source = AnalyticsPath.fromString(
-        `ph/${strand.documentId}/${strand.branch}/${strand.scope}`,
+        `ph/diff/${strand.driveId}/${strand.documentId}/${strand.branch}/${strand.scope}`,
       );
 
       if (firstOp.index === 0) {
@@ -109,12 +109,14 @@ export class DiffAnalyticsProcessor implements IProcessor {
 
     const changePath = path.split("[")[0].replaceAll(".", "/");
 
-    dimensions.changes = AnalyticsPath.fromString(`changes/${type}`);
+    dimensions.changes = AnalyticsPath.fromString(`ph/diff/changes/${type}`);
     dimensions.document = AnalyticsPath.fromString(
-      `document/${documentId}/${branch}/${scope}/${revision}`,
+      `ph/diff/document/${documentId}/${branch}/${scope}/${revision}`,
     );
-    dimensions.path = AnalyticsPath.fromString(`path/${changePath}`);
-    dimensions.drive = AnalyticsPath.fromString(`drive/${driveId}/${documentId}`);
+    dimensions.path = AnalyticsPath.fromString(`ph/diff/path/${changePath}`);
+    dimensions.drive = AnalyticsPath.fromString(
+      `ph/diff/drive/${driveId}/${documentId}`,
+    );
 
     return {
       dimensions,

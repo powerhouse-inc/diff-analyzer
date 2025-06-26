@@ -2,7 +2,7 @@
   "name": "@powerhousedao/diff-analyzer",
   "author": "Powerhouse DAO <hello@powerhouse.inc>",
   "description": "A tool for analyzing the differences between two documents",
-  "version": "0.0.0-dev.8",
+  "version": "0.0.0-dev.10",
   "license": "AGPL-3.0-only",
   "type": "module",
   "files": [
